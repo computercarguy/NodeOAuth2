@@ -5,7 +5,7 @@ const logoAttachment = {
     cid: 'logo'
 };
 
-module.exports = (email, subject, body, attachments, cbFunc) => {
+module.exports = async (email, subject, body, attachments, cbFunc) => {
     if (body.indexOf('src="cid:logo"') !== -1) {
         if (!attachments) {
             attachments = [];
@@ -13,6 +13,8 @@ module.exports = (email, subject, body, attachments, cbFunc) => {
 
         attachments.push(logoAttachment);
     }
+
+    const secrets = await useAwsSecrets();
 
     let transporter = nodemailer.createTransport({
         host: "smtppro.zoho.com",  
@@ -22,13 +24,13 @@ module.exports = (email, subject, body, attachments, cbFunc) => {
         port: 465,
         debug: false,
         auth: {
-            user: 'no-reply@ericsgear.com',
-            pass: '****'
+            user: secrets.noreplyemail,
+            pass: secrets.password
         }
     });
 
     let mailOptions = {
-        from: 'no-reply@ericsgear.com',
+        from: secrets.noreplyemail,
         to: email,
         subject: subject,
         html: body,

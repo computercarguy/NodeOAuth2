@@ -11,6 +11,8 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@aws-sdk/client-secrets-manager": "^3.458.0",
+        "aws-sdk": "^2.1504.0",
         "cors": "^2.8.5",
         "express": "^4.18.2",
         "mysql": "^2.18.1",

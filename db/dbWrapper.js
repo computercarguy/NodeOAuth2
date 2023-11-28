@@ -1,12 +1,17 @@
 // Reference: https://www.npmjs.com/package/mysql
 
 const dbPool = require('mysql');
-const pool = dbPool.createPool({
-    user: "authenticationEG",
-    host: "localhost",
-    database: "ericsgearlogin",
-    password: "IGU7UgyT7zfeYLIe",
-    port: 3306
+const useAwsSecrets = require('../hooks/useAwsSecrets');
+let pool;
+
+useAwsSecrets((secrets) => {
+    pool = dbPool.createPool({
+        user: "authenticationEG",
+        host: "localhost",
+        database: "ericsgearlogin",
+        password: secrets.authenticationEG,
+        port: 3306
+    });
 });
 
 function query(queryString, queryValues, cbFunc) {
