@@ -23,7 +23,7 @@ module.exports = (email, subject, body, attachments, cbFunc) => {
         debug: false,
         auth: {
             user: 'no-reply@ericsgear.com',
-            pass: 'nT#gzvr9'
+            pass: '****'
         }
     });
 
