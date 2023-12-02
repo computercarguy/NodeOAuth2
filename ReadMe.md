@@ -1,8 +1,10 @@
 This is currently a work in progress, so use this at your own risk. I wouldn't even call it beta, as there's still functionality I need to write, as well as adding automated tests, documentation, and even fully testing everything from the ground up.
 
-#NodeOAuth2
-##Eric's Gear
-###By Eric Ingamells
+# NodeOAuth2
+
+## Eric's Gear
+
+### By Eric Ingamells
 
 This is a simple OAuth2 API. It allows for user creation with fairly standard user data, login, logout, user logged in validation, password reset, username recovery, users can disable their own account, and email notifications of many of these functions.
 
@@ -12,15 +14,18 @@ Article: https://blog.logrocket.com/implement-oauth-2-0-node-js/
 
 GitHub repo: https://github.com/atharvadeosthale/logrocket-oauth2-article/tree/master
 
-##Routes
+## Routes
+
 There are 2 "route" files, _authRoutes.js_ and _userRouter.js_. These handle all the RESTful endpoint creation and delegation to methods.
 
-##Database
+## Database
+
 This currently uses MySQL in the _dbWrapper.js_ file. Other databases can be swapped out, as I swapped out the original PostGreSql implementation.
 
 The _ericsgearlogin.sql_ file contains the database schema.
 
-##Standalone
+## Standalone
+
 I made this project standalone so it could be used by multiple different projects simultaneously. I wanted to have the ability to have several of my online apps use this as a type of "single sign on". I'm not sure it'll get to a true SSO, but at least it's one username and password for all the apps.
 
-At minimum, gives me a single point of entry for the apps and a single DB that has all user information.
+At minimum, this project gives me a single point of entry for the apps and a single DB that has all user information.

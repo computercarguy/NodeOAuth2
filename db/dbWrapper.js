@@ -4,18 +4,26 @@ const dbPool = require('mysql');
 const useAwsSecrets = require('../hooks/useAwsSecrets');
 let pool;
 
-useAwsSecrets((secrets) => {
-    pool = dbPool.createPool({
-        user: "authenticationEG",
-        host: "localhost",
-        database: "ericsgearlogin",
-        password: secrets.authenticationEG,
-        port: 3306
-    });
-});
+useAwsSecrets(setPool);
 
-function query(queryString, queryValues, cbFunc) {
+function setPool(secrets){
+    if (secrets) {
+        pool = dbPool.createPool({
+            user: "authenticationEG",
+            host: "localhost",
+            database: "ericsgearlogin",
+            password: secrets.authenticationEG,
+            port: 3306
+        });
+    }
+}
+
+async function query(queryString, queryValues, cbFunc) {
     let parameterizedQuery = queryFormat(queryString, queryValues);
+
+    if (!pool) {
+        await useAwsSecrets(setPool);
+    }
 
     pool.query(parameterizedQuery, (error, results) => {
         if (cbFunc) {
@@ -38,7 +46,11 @@ queryFormat = function (query, values) {
     });
 }
 
-function healthCheck() {
+async function healthCheck() {
+    if (!pool) {
+        await useAwsSecrets(setPool);
+    }
+
     pool.ping(function (err) {
         if (err) throw err;
 
