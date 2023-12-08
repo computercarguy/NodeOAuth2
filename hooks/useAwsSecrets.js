@@ -1,7 +1,7 @@
 const { SecretsManagerClient, GetSecretValueCommand } = require("@aws-sdk/client-secrets-manager");  
 
-const secret_name = "NodeOAuth2";
-
+const environment = process.env.NODE_ENV.trim() || 'development';
+let secret_name = environment === 'development' ? "NodeOAuth2" : "NodeOAuth2Prod";
 const client = new SecretsManagerClient({region: "us-west-2"});
 
 module.exports = async (cbfunc) => {

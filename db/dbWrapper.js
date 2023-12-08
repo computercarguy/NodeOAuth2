@@ -9,11 +9,11 @@ useAwsSecrets(setPool);
 function setPool(secrets){
     if (secrets) {
         pool = dbPool.createPool({
-            user: "authenticationEG",
-            host: "localhost",
-            database: "ericsgearlogin",
+            user: secrets.user,
+            host: secrets.host,
+            database: secrets.database,
             password: secrets.authenticationEG,
-            port: 3306
+            port: secrets.port
         });
     }
 }
