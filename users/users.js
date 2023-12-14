@@ -113,7 +113,7 @@ function disable(req, res) {
                 return;
             }
     
-            tokenDB.disableUserTokens(token, 0, null);
+            tokenDB.disableUserTokens(token, userId, null, null);
 
             useReadEmailFile("staticFiles/accountDisabled.html", (body, error) => {
                 if (!body || error) {
@@ -280,7 +280,7 @@ function logout(req, res) {
             return;
         }
 
-        tokenDB.disableUserTokens(token, req.body.logoutType, (response) => {
+        tokenDB.disableUserTokens(token, req.body.logoutType, null, (response) => {
             useSendResponse(
                 res,
                 response ? success : null,

@@ -11,16 +11,14 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@aws-sdk/client-secrets-manager": "^3.458.0",
-        "aws-sdk": "^2.1504.0",
+        "@aws-sdk/client-secrets-manager": "^3.470.0",
         "cors": "^2.8.5",
         "express": "^4.18.2",
         "mysql": "^2.18.1",
         "node-oauth2-server": "^2.4.0",
-        "nodemailer": "^6.9.5",
-        "pg": "^8.11.3"
+        "nodemailer": "^6.9.7"
     },
     "devDependencies": {
-        "nodemon": "^3.0.1"
+        "nodemon": "^3.0.2"
     }
 }

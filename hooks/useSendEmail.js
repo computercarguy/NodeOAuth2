@@ -1,4 +1,5 @@
 var nodemailer = require('nodemailer');
+const useAwsSecrets = require('./useAwsSecrets');
 const logoAttachment = {
     filename: 'EricsGearLogo.png',
     path: 'staticFiles/EricsGearLogo.png',

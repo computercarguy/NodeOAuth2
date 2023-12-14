@@ -19,7 +19,7 @@ function saveAccessToken(accessToken, userId, expires, cbFunc) {
     });
 }
 
-function disableUserTokens(accessToken, userId, disableType) {
+function disableUserTokens(accessToken, userId, disableType, cbFunc) {
     let disableTokens = `UPDATE access_tokens SET ExpirationDate = NOW() WHERE UserId = :userId`;
     switch (disableType) {
         case 1: // other logins
@@ -36,7 +36,9 @@ function disableUserTokens(accessToken, userId, disableType) {
     let values = {accessToken: accessToken, userId: userId};
   
     dbPool.query(disableTokens, values, (response) => {
-        cbFunc(response.error);
+        if (cbFunc) {
+            cbFunc(response);
+        }
     });
 }
   
