@@ -38,7 +38,7 @@ function register(body, cbFunc) {
 function updatePassword(currentPassword, password, userId, cbFunc) {
     var shaPass = crypto.createHash("sha256").update(password).digest("hex");
     var shaPassOrig = crypto.createHash("sha256").update(currentPassword).digest("hex");
-    const query = `UPDATE users SET UserPassword = ':shaPass' WHERE Id = ':userId' AND UserPassword = ':currentPassword';`;
+    const query = `UPDATE users SET UserPassword = ':shaPass' WHERE Id = ':userId' AND UserPassword = ':currentPassword' AND Active = 1;`;
     const values = {shaPass: shaPass, userId: userId, currentPassword: shaPassOrig};
 
     dbPool.query(query, values, cbFunc);
@@ -57,7 +57,7 @@ function update(body, userId, cbFunc) {
             State = ':state', 
             Email = ':email', 
             Zipcode = ':zipCode'
-        WHERE Id = ':userId';`;
+        WHERE Id = ':userId' AND Active = 1;`;
 
     const values = body;
     values.userId = userId;
@@ -102,7 +102,7 @@ function getUser(username, password, cbFunc) {
 }
   
 function isValidUser(username, email, cbFunc) {
-    const query = `SELECT Id FROM users WHERE Username = ':username' OR Email = ':email'`;
+    const query = `SELECT Id FROM users WHERE Username = ':username' OR Email = ':email' AND Active = 1`;
     const values = {username: username, email: email};
   
     const checkUsrcbFunc = (response) => {
@@ -117,7 +117,7 @@ function isValidUser(username, email, cbFunc) {
 }
 
 function validateUser(userId, cbFunc) {
-    const query = `SELECT FirstName, LastName, Username, Email FROM users WHERE Id = ':userId'`;
+    const query = `SELECT FirstName, LastName, Username, Email FROM users WHERE Id = ':userId' AND Active = 1`;
     const values = {userId: userId};
   
     const checkUsrcbFunc = (response) => {
@@ -130,7 +130,7 @@ function validateUser(userId, cbFunc) {
 }
 
 function getUserForPasswordReset(email, cbFunc) {
-    const query = `SELECT Id, Username FROM users WHERE Email = ':email'`;
+    const query = `SELECT Id, Username FROM users WHERE Email = ':email' AND Active = 1`;
     const values = {email: email};
   
     const checkUsrcbFunc = (response) => {
