@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 28, 2023 at 01:13 AM
+-- Generation Time: Jan 19, 2024 at 10:29 PM
 -- Server version: 10.1.28-MariaDB
 -- PHP Version: 5.6.32
 
@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `access_tokens` (
   `AccessToken` text,
-  `UserId` int(11) DEFAULT NULL,
+  `UserId` int(11) NOT NULL,
   `ExpirationDate` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -72,6 +72,18 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
+-- Triggers `users`
+--
+DELIMITER $$
+CREATE TRIGGER `UserGuidTrigger` BEFORE INSERT ON `users` FOR EACH ROW BEGIN 
+    IF ASCII(NEW.UniqueId) = 0 THEN 
+        SET NEW.UniqueId = UNHEX(REPLACE(UUID(),'-','')); 
+    END IF; 
+    SET @last_uuid = NEW.UniqueId; 
+END
+$$
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -89,6 +101,18 @@ CREATE TABLE `whitelist` (
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `access_tokens`
+--
+ALTER TABLE `access_tokens`
+  ADD KEY `fk_access_tokens_user` (`UserId`);
+
+--
+-- Indexes for table `passwordreset`
+--
+ALTER TABLE `passwordreset`
+  ADD KEY `fk_passwordreset_user` (`UserId`);
 
 --
 -- Indexes for table `users`
@@ -118,16 +142,21 @@ ALTER TABLE `users`
 ALTER TABLE `whitelist`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
 
-DELIMITER $$
 --
--- Events
+-- Constraints for dumped tables
 --
-CREATE DEFINER=`root`@`localhost` EVENT `DeleteExpiredTokens` ON SCHEDULE EVERY 1 DAY STARTS '2023-09-23 01:00:00' ON COMPLETION NOT PRESERVE ENABLE DO DELETE FROM access_tokens WHERE ExpirationDate <= NOW()$$
 
-CREATE DEFINER=`root`@`localhost` EVENT `DeleteUsedPasswordResets` ON SCHEDULE EVERY 1 DAY STARTS '2023-09-27 01:00:00' ON COMPLETION NOT PRESERVE ENABLE DO DELETE FROM passwordreset
-WHERE ExpiresAt <= NOW()$$
+--
+-- Constraints for table `access_tokens`
+--
+ALTER TABLE `access_tokens`
+  ADD CONSTRAINT `fk_access_tokens_user` FOREIGN KEY (`UserId`) REFERENCES `users` (`Id`);
 
-DELIMITER ;
+--
+-- Constraints for table `passwordreset`
+--
+ALTER TABLE `passwordreset`
+  ADD CONSTRAINT `fk_passwordreset_user` FOREIGN KEY (`UserId`) REFERENCES `users` (`Id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
