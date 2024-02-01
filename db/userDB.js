@@ -21,8 +21,8 @@ var crypto = require("crypto");
 function register(body, cbFunc) {
     var shaPass = crypto.createHash("sha256").update(body.password).digest("hex");
 
-    const query = `INSERT INTO users (FirstName, LastName, Username, UserPassword, Business, BusinessName, Address1, Address2, City, State, Email, Zipcode) 
-        VALUES (':firstName', ':lastName', ':username', ':shaPass', :business, ':businessName', ':address1', ':address2', ':city', ':state', ':email', ':zipCode');`;
+    const query = `INSERT INTO users (FirstName, LastName, Username, UserPassword, Business, BusinessName, Address1, Address2, City, State, Email, Zipcode, Country) 
+        VALUES (':firstName', ':lastName', ':username', ':shaPass', :business, ':businessName', ':address1', ':address2', ':city', ':state', ':email', ':zipcode', ':country');`;
     const values = body;
 
     values.shaPass = shaPass;
@@ -56,7 +56,8 @@ function update(body, userId, cbFunc) {
             City = ':city', 
             State = ':state', 
             Email = ':email', 
-            Zipcode = ':zipCode'
+            Zipcode = ':zipcode',
+            Country = ':country'
         WHERE Id = ':userId' AND Active = 1;`;
 
     const values = body;
@@ -73,7 +74,7 @@ function disable(userId, cbFunc) {
 }
 
 function getUserById(userId, cbFunc) {
-    const getUserQuery = `SELECT Id, FirstName, LastName, Username, Business, BusinessName, Address1, Address2, City, State, Email, Zipcode FROM users WHERE Id = ':userId' AND Active = 1;`;
+    const getUserQuery = `SELECT Id, FirstName, LastName, Username, Business, BusinessName, Address1, Address2, City, State, Email, Zipcode, Country FROM users WHERE Id = ':userId' AND Active = 1;`;
     const values = {userId: userId};
 
     dbPool.query(getUserQuery, values, (response) => {
@@ -88,7 +89,7 @@ function getUserById(userId, cbFunc) {
 function getUser(username, password, cbFunc) {
     var shaPass = crypto.createHash("sha256").update(password).digest("hex");
   
-    const getUserQuery = `SELECT Id, FirstName, LastName, Username, Business, BusinessName, Address1, Address2, City, State, Email, Zipcode FROM users WHERE Username = ':username' AND UserPassword = ':shaPass' AND Active = 1;`;
+    const getUserQuery = `SELECT Id, FirstName, LastName, Username, Business, BusinessName, Address1, Address2, City, State, Email, Zipcode, Country FROM users WHERE Username = ':username' AND UserPassword = ':shaPass' AND Active = 1;`;
     const values = {username: username, shaPass: shaPass};
   
     dbPool.query(getUserQuery, values, (response) => {
@@ -102,7 +103,7 @@ function getUser(username, password, cbFunc) {
 }
   
 function isValidUser(username, email, cbFunc) {
-    const query = `SELECT Id FROM users WHERE Username = ':username' OR Email = ':email' AND Active = 1`;
+    const query = `SELECT Id FROM users WHERE Username = ':username' OR Email = ':email'`;
     const values = {username: username, email: email};
   
     const checkUsrcbFunc = (response) => {

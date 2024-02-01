@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 19, 2024 at 10:29 PM
+-- Generation Time: Feb 01, 2024 at 10:27 PM
 -- Server version: 10.1.28-MariaDB
 -- PHP Version: 5.6.32
 
@@ -68,21 +68,9 @@ CREATE TABLE `users` (
   `City` text,
   `State` text,
   `Zipcode` text,
+  `Country` varchar(2) DEFAULT NULL,
   `Active` tinyint(4) DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Triggers `users`
---
-DELIMITER $$
-CREATE TRIGGER `UserGuidTrigger` BEFORE INSERT ON `users` FOR EACH ROW BEGIN 
-    IF ASCII(NEW.UniqueId) = 0 THEN 
-        SET NEW.UniqueId = UNHEX(REPLACE(UUID(),'-','')); 
-    END IF; 
-    SET @last_uuid = NEW.UniqueId; 
-END
-$$
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -134,7 +122,7 @@ ALTER TABLE `whitelist`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `whitelist`
@@ -157,6 +145,17 @@ ALTER TABLE `access_tokens`
 --
 ALTER TABLE `passwordreset`
   ADD CONSTRAINT `fk_passwordreset_user` FOREIGN KEY (`UserId`) REFERENCES `users` (`Id`);
+
+DELIMITER $$
+--
+-- Events
+--
+CREATE DEFINER=`root`@`localhost` EVENT `DeleteExpiredTokens` ON SCHEDULE EVERY 1 DAY STARTS '2023-09-23 01:00:00' ON COMPLETION NOT PRESERVE ENABLE DO DELETE FROM access_tokens WHERE ExpirationDate <= NOW()$$
+
+CREATE DEFINER=`root`@`localhost` EVENT `DeleteUsedPasswordResets` ON SCHEDULE EVERY 1 DAY STARTS '2023-09-27 01:00:00' ON COMPLETION NOT PRESERVE ENABLE DO DELETE FROM passwordreset
+WHERE ExpiresAt <= NOW()$$
+
+DELIMITER ;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -1,3 +1,4 @@
+const authenticator = require("../auth/authenticator.js");
 const useGetBearerToken = require("../hooks/useGetBearerToken.js");
 const useReadEmailFile = require("../hooks/useReadEmailFile.js");
 const useSendEmail = require("../hooks/useSendEmail.js");
@@ -9,11 +10,13 @@ const success = "Success";
 let tokenDB;
 let userDB;
 let passwordResetDB;
+let auth;
 
-module.exports = (injectedUserDB, injectedTokenDB, injectedPasswordResetDB) => {
+module.exports = (injectedUserDB, injectedTokenDB, injectedPasswordResetDB, injectedAuthenticator) => {
     userDB = injectedUserDB;
     tokenDB = injectedTokenDB;
     passwordResetDB = injectedPasswordResetDB;
+    auth = injectedAuthenticator;
 
     return {
         updatePassword,
@@ -223,6 +226,13 @@ function createPasswordReset(req, res) {
 
 function doPasswordReset(req, res) {
     if (!req.body.email || !req.body.guid) {
+        sendError(res);
+        return;
+    }
+
+    const passwordResults = auth.CheckPasswords(req.body.password);
+
+    if (!passwordResults.valid) {
         sendError(res);
         return;
     }

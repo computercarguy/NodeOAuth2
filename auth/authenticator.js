@@ -17,6 +17,8 @@ module.exports = (injectedUserDB, injectedTokenDB) => {
         login,
         validateUser,
         getUserId,
+        getPasswordComplexity,
+        CheckPasswords,
         checkWhitelist
     };
 };
@@ -27,19 +29,24 @@ function registerUser(req, res) {
         return;
     }
 
+    const passwordResults = CheckPasswords(req.body.password);
+
+    if (!passwordResults.valid) {
+        sendError(res);
+        return;
+    }
+
     userDB.isValidUser(req.body.username, req.body.email, (error, isValidUser) => {
         if (error || !isValidUser) {
-            const message = error
+            useSendResponse(res, null, error
                 ? errorMessage
-                : "This user already exists.";
-
-            useSendResponse(res, message, error | "");
+                : "This user already exists.");
 
             return;
         }
 
         userDB.register(req.body, (response) => {
-            if (!response) {
+            if (!response || response.error) {
                 sendError(res);
                 return;
             }
@@ -118,12 +125,53 @@ function sendError(res) {
     );
 }
 
+function PasswordComplexity() {
+    return {
+        minLength: 8,
+        hasUpperCase: true,
+        hasLowerCase: true,
+        hasNumbers: true,
+        hasNonalphas: true
+    };
+}
+
+function getPasswordComplexity(req, res) {
+        useSendResponse(
+        res,
+        PasswordComplexity(),
+        errorMessage
+    );
+}
+
+function CheckPasswords(password) {
+    const options = PasswordComplexity();
+
+    let results = {
+        minLength: options.minLength && password.length >= options.minLength,
+        hasUpperCase: options.hasUpperCase && /[A-Z]/.test(password),
+        hasLowerCase: options.hasLowerCase && /[a-z]/.test(password),
+        hasNumbers: options.hasNumbers && /\d/.test(password),
+        hasNonalphas: options.hasNonalphas && /\W/.test(password),
+        valid: true
+    };
+
+    for (var key in results) {
+        if (results.hasOwnProperty(key)) {
+            results["valid"] &= results[key];
+        }
+    }
+
+    return results;
+}
+
 function checkWhitelist(req, res) {
+    /*
     console.log("host: " + req.get("host"));
     console.log("origin: " + req.get("origin"));
     let remoteServer = req.get("origin") ?? req.get("host");
     console.log("remoteServer: " + remoteServer);
     var url_parts = new URL(remoteServer);
     console.log(url_parts);
+    */
 
 }
