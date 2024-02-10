@@ -278,7 +278,7 @@ function sendError(res) {
 
 function logout(req, res) {
     const token = useGetBearerToken(req);
-
+    
     if (!token) {
         sendError(res);
         return;
@@ -290,11 +290,11 @@ function logout(req, res) {
             return;
         }
 
-        tokenDB.disableUserTokens(token, req.body.logoutType, null, (response) => {
+        tokenDB.disableUserTokens(token, userId, req.body.logoutType, (response) => {
             useSendResponse(
                 res,
-                response ? success : null,
-                response == null ? null : errorMessage,
+                response && !response.error ? success : null,
+                !response || response.error ? errorMessage: null,
             );
         });
     });
