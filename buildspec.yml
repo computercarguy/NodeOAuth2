@@ -8,17 +8,11 @@ phases:
   build:
     commands:
       - echo Build started on `date`
+
   post_build:
     commands:
       - echo Build completed on `date`
 # Include only the files required for your application to run.
 artifacts:
   files:
-    - package.json
-    - index.js
-    - auth/**/*
-    - db/**/*
-    - hooks/**/*
-    - staticFiles/**/*
-    - users/**/*
-    - node_modules/**/*
+    - ./**/*
