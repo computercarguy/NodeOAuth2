@@ -52,7 +52,8 @@ app.use(function(req, res, next) {
     next();
 });
 
-const port = 80; // 3001;
+const port = process.env.NODE_ENV.trim() === "production" ? 80 : 3001;
+
 app.listen(port, () => {
     console.log(`listening on port ${port}`);
 });
