@@ -52,7 +52,7 @@ app.use(function(req, res, next) {
     next();
 });
 
-const port = 3001;
+const port = 80; // 3001;
 app.listen(port, () => {
     console.log(`listening on port ${port}`);
 });
