@@ -1,7 +1,8 @@
 {
     "scripts": {
         "start": "node index.js",
-        "dev": "nodemon index.js"
+        "dev": "nodemon index.js",
+        "build": "tsc"
     },
     "name": "oauth2-example",
     "version": "1.0.0",
