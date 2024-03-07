@@ -1,5 +1,5 @@
 module.exports = (router, app, testAPIService) => {
-  router.post("/hello", testAPIService.helloWorld);
+  router.get("/hello", testAPIService.helloWorld);
 
   return router;
 };
