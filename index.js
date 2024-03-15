@@ -3,6 +3,8 @@ const dbPool = require("./db/dbWrapper");
 const tokenDB = require("./db/tokenDB")(dbPool);
 const userDB = require("./db/userDB")(dbPool);
 const passwordResetDB = require("./db/passwordResetDB")(dbPool);
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger-output.json');
 
 // OAuth imports
 const oAuthService = require("./auth/tokenService")(userDB, tokenDB);
@@ -51,6 +53,8 @@ app.use(function(req, res, next) {
     res.header(`Access-Control-Allow-Headers`, `Content-Type`);
     next();
 });
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 const port = 3001;
 

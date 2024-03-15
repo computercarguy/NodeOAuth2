@@ -12,11 +12,14 @@
     "license": "ISC",
     "dependencies": {
         "@aws-sdk/client-secrets-manager": "^3.535.0",
+        "@types/swagger-ui-express": "^4.1.6",
         "cors": "^2.8.5",
         "express": "^4.18.3",
         "mysql": "^2.18.1",
         "node-oauth2-server": "^2.4.0",
-        "nodemailer": "^6.9.12"
+        "nodemailer": "^6.9.12",
+        "swagger-autogen": "^2.23.7",
+        "swagger-ui-express": "^5.0.0"
     },
     "devDependencies": {
         "nodemon": "^3.1.0"
