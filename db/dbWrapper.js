@@ -50,14 +50,10 @@ async function healthCheck() {
     if (!pool) {
         await useAwsSecrets(setPool);
     }
-    console.log(pool);
-/*
-    pool.ping(function (err) {
-        if (err) throw err;
 
-        console.log('Server responded to ping');
+    query("SELECT 'healthCheckPassed'", null, (results) =>{
+        console.log(results);
     });
-    */
 }
 
 function setResponse(error, results) {
