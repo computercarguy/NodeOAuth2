@@ -165,6 +165,7 @@ function CheckPasswords(password) {
 }
 
 function checkWhitelist(req, res) {
+    console.log(req.params);
     /*
     console.log("host: " + req.get("host"));
     console.log("origin: " + req.get("origin"));
