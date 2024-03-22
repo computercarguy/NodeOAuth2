@@ -20,7 +20,7 @@ app.oauth = oAuth2Server({
     debug: true,
 });
 
-const testAPIService = require("./test/testAPIService.js");
+const testAPIService = require("./test/testAPIService.js")(tokenDB);
 const testAPIRoutes = require("./test/testAPIRoutes.js")(
     express.Router(),
     app,

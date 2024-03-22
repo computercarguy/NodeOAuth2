@@ -6,6 +6,7 @@ const client = new SecretsManagerClient({region: "us-west-2"});
 
 module.exports = async (cbfunc) => {
     let response;
+    console.log(environment);
 
     try {
         response = await client.send(

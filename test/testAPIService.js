@@ -1,7 +1,12 @@
-module.exports = {
-  helloWorld,
+let tokenDB;
+
+module.exports = (injectedTokenDB) => {
+    tokenDB = injectedTokenDB;
+    
+    return {helloWorld};
 };
 
 function helloWorld(req, res) {
-  res.send("Hello World OAuth2!");
+    tokenDB.healthCheck();
+    res.send("Hello World OAuth2!");
 }

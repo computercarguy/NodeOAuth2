@@ -6,9 +6,13 @@ module.exports = (injectedPgPool) => {
     return {
         saveAccessToken,
         getUserIDFromBearerToken,
-        disableUserTokens
+        disableUserTokens,
+        healthCheck
     };
 };
+function healthCheck() {
+    dbPool.healthCheck();
+}
 
 function saveAccessToken(accessToken, userId, expires, cbFunc) {
     const insertTokenQuery = `INSERT INTO access_tokens (AccessToken, UserId, ExpirationDate) VALUES (':accessToken', :userId, ':expires');`;
