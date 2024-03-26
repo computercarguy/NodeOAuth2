@@ -2,7 +2,6 @@
 
 const dbPool = require('mysql');
 const useAwsSecrets = require('../hooks/useAwsSecrets');
-const environment = process.env.NODE_ENV ? process.env.NODE_ENV.trim() : 'development';
 let pool;
 
 useAwsSecrets(setPool);
@@ -14,8 +13,7 @@ function setPool(secrets){
             host: secrets.host,
             database: secrets.database,
             password: secrets.authenticationEG,
-            port: secrets.port,
-            ssl : environment !== 'development'
+            port: secrets.port
         });
     }
 }
