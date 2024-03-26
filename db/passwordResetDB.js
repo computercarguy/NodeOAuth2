@@ -22,6 +22,7 @@ function createPasswordReset(userId, email, cbFunc) {
             cbFunc(guid);    
         }
         else {
+            dbPool.savelog("passwordResetDB.js", "createPasswordReset", "query", null, response.message);
             cbFunc("", response.message);
         }
     };
@@ -35,6 +36,11 @@ function getPasswordReset(guid, email, cbFunc) {
   
     const checkUsrcbFunc = (response) => {
         const userId = response && response.results.length == 1 ? response.results[0].UserId : null;
+
+        if (response.error) {
+            dbPool.savelog("userDB.js", "getPasswordReset", "query", userId, response.error);
+        }
+
         cbFunc(userId);
     };
   
@@ -45,5 +51,9 @@ function disable(guid) {
     const query = `UPDATE passwordReset SET ExpiresAt = NOW() WHERE Guid = ':guid';`;
     const values = {guid: guid};
 
-    dbPool.query(query, values);
+    dbPool.query(query, values, (response) => {
+        if (response.error) {
+            dbPool.savelog("userDB.js", "disable", "query", guid, response.error);
+        }
+    });
 }

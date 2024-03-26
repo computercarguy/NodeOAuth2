@@ -20,6 +20,10 @@ function saveAccessToken(accessToken, userId, expires, cbFunc) {
     let values = {accessToken: accessToken, userId: userId, expires: expires.toISOString().slice(0, 19).replace('T', ' ')};
   
     dbPool.query(insertTokenQuery, values, (response) => {
+        if (response.error) {
+            dbPool.savelog("tokenDB.js", "saveAccessToken", "query", null, response.error);
+        }
+        
         cbFunc(response.error);
     });
 }
@@ -41,6 +45,10 @@ function disableUserTokens(accessToken, userId, disableType, cbFunc) {
     let values = {accessToken: accessToken, userId: userId};
   
     dbPool.query(disableTokens, values, (response) => {
+        if (response.error) {
+            dbPool.savelog("tokenDB.js", "disableUserTokens", "query", null, response.error);
+        }
+
         if (cbFunc) {
             cbFunc(response);
         }
@@ -56,6 +64,10 @@ function getUserIDFromBearerToken(bearerToken, cbFunc) {
             response.results && response.results.length == 1
                 ? response.results[0].UserId
                 : null;
+        
+        if (response.error) {
+            dbPool.savelog("tokenDB.js", "getUserIDFromBearerToken", "query", userID, response.error);
+        }
   
         cbFunc(userID);
     });

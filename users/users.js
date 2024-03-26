@@ -1,4 +1,3 @@
-const authenticator = require("../auth/authenticator.js");
 const useGetBearerToken = require("../hooks/useGetBearerToken.js");
 const useReadEmailFile = require("../hooks/useReadEmailFile.js");
 const useSendEmail = require("../hooks/useSendEmail.js");
@@ -59,7 +58,7 @@ function updatePassword(req, res) {
 
                     const subject = 'Password reset';
 
-                    useSendEmail(user.Email, subject, body);
+                    useSendEmail(user.Email, subject, body, null, userDB.savelog);
                 });
             });
 
@@ -126,7 +125,7 @@ function disable(req, res) {
 
                 const subject = 'Account Disabled';
 
-                useSendEmail(req.body.email, subject, body);
+                useSendEmail(req.body.email, subject, body, null, userDB.savelog);
             });
 
             useSendResponse(
@@ -182,7 +181,7 @@ function forgotUsername(req, res) {
 
             const subject = 'Forgot Username';
 
-            useSendEmail(req.body.email, subject, body.replace(":username", username), null, (message, error) => {
+            useSendEmail(req.body.email, subject, body.replace(":username", username), null, userDB.savelog, (message, error) => {
                 useSendResponse(res, message, error);
             });
         });
@@ -216,7 +215,7 @@ function createPasswordReset(req, res) {
                 const subject = 'Password Reset Requested';
                 const passwordResetLink = `https://appmarketplace.ericsgear.com/?email=${req.body.email}&guid=${response}`;
 
-                useSendEmail(req.body.email, subject, body.replaceAll(":passwordResetLink", passwordResetLink), null, (message, error) => {
+                useSendEmail(req.body.email, subject, body.replaceAll(":passwordResetLink", passwordResetLink), null, userDB.savelog, (message, error) => {
                     useSendResponse(res, message, error);
                 });
             });
@@ -256,7 +255,7 @@ function doPasswordReset(req, res) {
 
                 const subject = 'Password Reset Succeeded';
 
-                useSendEmail(req.body.email, subject, body);
+                useSendEmail(req.body.email, subject, body, null, userDB.savelog);
             });
 
             useSendResponse(

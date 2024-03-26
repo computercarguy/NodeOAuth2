@@ -6,7 +6,7 @@ const logoAttachment = {
     cid: 'logo'
 };
 
-module.exports = async (email, subject, body, attachments, cbFunc) => {
+module.exports = async (email, subject, body, attachments, savelog, cbFunc) => {
     if (body.indexOf('src="cid:logo"') !== -1) {
         if (!attachments) {
             attachments = [];
@@ -15,7 +15,7 @@ module.exports = async (email, subject, body, attachments, cbFunc) => {
         attachments.push(logoAttachment);
     }
 
-    const secrets = await useAwsSecrets();
+    const secrets = await useAwsSecrets(savelog);
 
     let transporter = nodemailer.createTransport({
         host: "smtppro.zoho.com",  
@@ -30,6 +30,15 @@ module.exports = async (email, subject, body, attachments, cbFunc) => {
         }
     });
 
+    if (!transporter) {
+        savelog("useSendEmail.js", "sendMail", "set up transporter", null, "transporter failed to connect");
+        
+        if (cbFunc) {
+            cbFunc(null, "Something went wrong");
+            return;
+        }
+    }
+
     let mailOptions = {
         from: secrets.noreplyemail,
         to: email,
@@ -39,6 +48,10 @@ module.exports = async (email, subject, body, attachments, cbFunc) => {
     };
       
     transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            savelog("useSendEmail.js", "sendMail", "sending mail", null, response.error);
+        }
+
         if (cbFunc) {
             if (error) {
                 cbFunc(null, "Something went wrong");

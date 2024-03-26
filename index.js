@@ -41,7 +41,7 @@ app.use(app.oauth.errorHandler());
 app.use('/*', (req, res, next) => {
     authenticator.checkWhitelist(req);
     next();
-  });
+});
   
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);

@@ -4,9 +4,8 @@ const environment = process.env.NODE_ENV ? process.env.NODE_ENV.trim() : 'develo
 let secret_name = environment === 'development' ? "NodeOAuth2" : "NodeOAuth2Prod";
 const client = new SecretsManagerClient({region: "us-west-2"});
 
-module.exports = async (cbfunc) => {
+module.exports = async (savelog, cbfunc) => {
     let response;
-    console.log(environment);
 
     try {
         response = await client.send(
@@ -18,7 +17,7 @@ module.exports = async (cbfunc) => {
     } catch (error) {
         // For a list of exceptions thrown, see
         // https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
-        throw error;
+        savelog("useAwsSecrets.js", "useAwsSecrets", "query", null, error);
     }
 
     if (!response) {

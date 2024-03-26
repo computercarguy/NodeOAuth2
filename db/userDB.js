@@ -12,11 +12,16 @@ module.exports = (injectedPgPool) => {
         update,
         disable,
         validateUser,
-        getUserForPasswordReset
+        getUserForPasswordReset,
+        savelog
     };
 };
 
 var crypto = require("crypto");
+
+async function savelog(filename, methodname, stage, userid, message) {
+    dbPool.savelog(filename, methodname, stage, userid, message);
+}
 
 function register(body, cbFunc) {
     var shaPass = crypto.createHash("sha256").update(body.password).digest("hex");
@@ -32,7 +37,13 @@ function register(body, cbFunc) {
         values.businessName = "";
     }
 
-    dbPool.query(query, values, cbFunc);
+    dbPool.query(query, values, (results) => {
+        if (response.error) {
+            dbPool.savelog("userDB.js", "register", "query", null, response.error);
+        }
+
+        cbFunc(results);
+    });
 }
   
 function updatePassword(currentPassword, password, userId, cbFunc) {
@@ -41,7 +52,13 @@ function updatePassword(currentPassword, password, userId, cbFunc) {
     const query = `UPDATE users SET UserPassword = ':shaPass' WHERE Id = ':userId' AND UserPassword = ':currentPassword' AND Active = 1;`;
     const values = {shaPass: shaPass, userId: userId, currentPassword: shaPassOrig};
 
-    dbPool.query(query, values, cbFunc);
+    dbPool.query(query, values, (results) => {
+        if (response.error) {
+            dbPool.savelog("userDB.js", "updatePassword", "query", null, response.error);
+        }
+        
+        cbFunc(results);
+    });
 }
   
 function update(body, userId, cbFunc) {
@@ -63,14 +80,26 @@ function update(body, userId, cbFunc) {
     const values = body;
     values.userId = userId;
 
-    dbPool.query(query, values, cbFunc);
+    dbPool.query(query, values, (results) => {
+        if (response.error) {
+            dbPool.savelog("userDB.js", "update", "query", null, response.error);
+        }
+        
+        cbFunc(results);
+    });
 }
 
 function disable(userId, cbFunc) {
     const query = `UPDATE users SET Active = 0 WHERE Id = ':userId';`;
     const values = {userId: userId};
 
-    dbPool.query(query, values, cbFunc);
+    dbPool.query(query, values, (results) => {
+        if (response.error) {
+            dbPool.savelog("userDB.js", "disable", "query", null, response.error);
+        }
+        
+        cbFunc(results);
+    });
 }
 
 function getUserById(userId, cbFunc) {
@@ -78,6 +107,10 @@ function getUserById(userId, cbFunc) {
     const values = {userId: userId};
 
     dbPool.query(getUserQuery, values, (response) => {
+        if (response.error) {
+            dbPool.savelog("userDB.js", "getUserById", "query", null, response.error);
+        }
+        
         cbFunc(
             response.results && response.results.length === 1
                 ? response.results[0]
@@ -93,6 +126,10 @@ function getUser(username, password, cbFunc) {
     const values = {username: username, shaPass: shaPass};
   
     dbPool.query(getUserQuery, values, (response) => {
+        if (response.error) {
+            dbPool.savelog("userDB.js", "getUser", "query", null, response.error);
+        }
+        
         cbFunc(
             false,
             response.results && response.results.length === 1
@@ -111,6 +148,10 @@ function isValidUser(username, email, cbFunc) {
             ? response.results.length === 0
             : null;
     
+        if (response.error) {
+            dbPool.savelog("userDB.js", "isValidUser", "query", null, response.error);
+        }
+        
         cbFunc(response.error, isValidUser);
     };
   
@@ -124,6 +165,10 @@ function validateUser(userId, cbFunc) {
     const checkUsrcbFunc = (response) => {
         const isValidUser = response.results.length == 1 ? response.results[0] : null;
     
+        if (response.error) {
+            dbPool.savelog("userDB.js", "validateUser", "query", null, response.error);
+        }
+        
         cbFunc(isValidUser);
     };
   
@@ -135,7 +180,11 @@ function getUserForPasswordReset(email, cbFunc) {
     const values = {email: email};
   
     const checkUsrcbFunc = (response) => {
-        if (response.results.length === 1){
+        if (response.error) {
+            dbPool.savelog("userDB.js", "getUserForPasswordReset", "query", null, response.error);
+        }
+        
+        if (response.results.length === 1) {
             const userId = response.results[0].Id;
             const username = response.results[0].Username;
         

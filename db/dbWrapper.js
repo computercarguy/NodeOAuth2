@@ -4,7 +4,13 @@ const dbPool = require('mysql');
 const useAwsSecrets = require('../hooks/useAwsSecrets');
 let pool;
 
-useAwsSecrets(setPool);
+useAwsSecrets(savelog, setPool);
+
+module.exports = {
+    query,
+    healthCheck,
+    savelog,
+};
 
 function setPool(secrets){
     if (secrets) {
@@ -22,7 +28,7 @@ async function query(queryString, queryValues, cbFunc) {
     let parameterizedQuery = queryFormat(queryString, queryValues);
     
     if (!pool) {
-        await useAwsSecrets(setPool);
+        await useAwsSecrets(savelog, setPool);
     }
 
     pool.query(parameterizedQuery, (error, results) => {
@@ -48,7 +54,7 @@ queryFormat = function (query, values) {
 
 async function healthCheck(cbFunc) {
     if (!pool) {
-        await useAwsSecrets(setPool);
+        await useAwsSecrets(savelog, setPool);
     }
 
     query("SELECT 'healthCheckPassed'", null, cbFunc);
@@ -61,7 +67,9 @@ function setResponse(error, results) {
     };
 }
 
-module.exports = {
-    query,
-    healthCheck,
-};
+async function savelog(filename, methodname, stage, userid, message) {
+    const insertLog = `INSERT INTO eventlog (message, datelogged,) VALUES (':message', NOW());`;
+    let values = {message: `${filename}: ${methodname}: ${stage}: ${userid}: ${message}`};
+  
+    dbPool.query(insertLog, values);
+}
