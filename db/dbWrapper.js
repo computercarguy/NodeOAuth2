@@ -26,10 +26,6 @@ async function query(queryString, queryValues, cbFunc) {
     }
 
     pool.query(parameterizedQuery, (error, results) => {
-        console.log("query error:");
-        console.log(error);
-        console.log("query results:");
-        console.log(results);
         if (cbFunc) {
             cbFunc(setResponse(error, results));
         }
