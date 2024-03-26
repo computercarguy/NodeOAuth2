@@ -10,8 +10,9 @@ module.exports = (injectedPgPool) => {
         healthCheck
     };
 };
-function healthCheck() {
-    dbPool.healthCheck();
+
+function healthCheck(cbFunc) {
+    return dbPool.healthCheck(cbFunc);
 }
 
 function saveAccessToken(accessToken, userId, expires, cbFunc) {
