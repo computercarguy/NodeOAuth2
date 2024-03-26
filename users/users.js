@@ -214,7 +214,7 @@ function createPasswordReset(req, res) {
                 }
 
                 const subject = 'Password Reset Requested';
-                const passwordResetLink = `http://appmarketplace.ericsgear.com/?email=${req.body.email}&guid=${response}`;
+                const passwordResetLink = `https://appmarketplace.ericsgear.com/?email=${req.body.email}&guid=${response}`;
 
                 useSendEmail(req.body.email, subject, body.replaceAll(":passwordResetLink", passwordResetLink), null, (message, error) => {
                     useSendResponse(res, message, error);
