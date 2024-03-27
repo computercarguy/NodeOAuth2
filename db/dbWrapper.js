@@ -68,7 +68,7 @@ function setResponse(error, results) {
 }
 
 async function savelog(filename, methodname, stage, userid, message) {
-    const insertLog = `INSERT INTO eventlog (message, datelogged,) VALUES (':message', NOW());`;
+    const insertLog = `INSERT INTO eventlog (message) VALUES (':message');`;
     let values = {message: `${filename}: ${methodname}: ${stage}: ${userid}: ${message}`};
   
     dbPool.query(insertLog, values);
