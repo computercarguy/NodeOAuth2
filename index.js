@@ -56,7 +56,8 @@ app.use(function(req, res, next) {
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-const port = 3001;
+const env = process.env.NODE_ENV;
+const port = env && env.trim() === "development" ? 3001 : 8080;
 
 app.listen(port, () => {
     console.log(`listening on port ${port}`);
