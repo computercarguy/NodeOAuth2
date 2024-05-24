@@ -38,8 +38,8 @@ function register(body, cbFunc) {
     }
 
     dbPool.query(query, values, (results) => {
-        if (response.error) {
-            dbPool.savelog("userDB.js", "register", "query", null, response.error);
+        if (results.error) {
+            dbPool.savelog("userDB.js", "register", "query", null, results.error);
         }
 
         cbFunc(results);

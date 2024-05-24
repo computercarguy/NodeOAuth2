@@ -4,7 +4,7 @@ const useSendEmail = require("../hooks/useSendEmail");
 const useSendResponse = require("../hooks/useSendResponse");
 
 const errorMessage = "Something went wrong.";
-const success = "Success";
+const success = "Success:";
 let userDB;
 let tokenDB;
 
@@ -46,6 +46,7 @@ function registerUser(req, res) {
         }
 
         userDB.register(req.body, (response) => {
+
             if (!response || response.error) {
                 sendError(res);
                 return;
@@ -64,7 +65,7 @@ function registerUser(req, res) {
 
             useSendResponse(
                 res,
-                response && response.error == null ? success : errorMessage,
+                response && response.error == null ? success + response.results.insertId : errorMessage,
                 response.error
             );
         });
