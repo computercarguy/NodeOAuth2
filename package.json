@@ -1,6 +1,8 @@
 {
     "scripts": {
         "start": "node index.js",
+        "build": "",
+        "gcp-build": "",
         "dev": "nodemon index.js"
     },
     "name": "oauth2-example",
