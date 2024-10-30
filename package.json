@@ -1,8 +1,8 @@
 {
     "scripts": {
         "start": "node index.js",
-        "build": "tsc -p .",
-        "gcp-build": "tsc -p .",
+        "build": "",
+        "gcp-build": "",
         "dev": "nodemon index.js"
     },
     "name": "oauth2-example",
