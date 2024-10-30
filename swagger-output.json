@@ -102,6 +102,16 @@
         }
       }
     },
+    "/checkUsernameEmail": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/login": {
       "post": {
         "description": "",

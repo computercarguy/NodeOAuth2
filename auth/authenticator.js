@@ -19,7 +19,8 @@ module.exports = (injectedUserDB, injectedTokenDB) => {
         getUserId,
         getPasswordComplexity,
         CheckPasswords,
-        checkWhitelist
+        checkWhitelist,
+        checkUsernameEmail
     };
 };
 
@@ -36,46 +37,62 @@ function registerUser(req, res) {
         return;
     }
 
-    userDB.isValidUser(req.body.username, req.body.email, (error, isValidUser) => {
-        if (error || !isValidUser) {
-            useSendResponse(res, null, error
-                ? errorMessage
-                : "This user already exists.");
+    userDB.isValidUser(
+        req.body.username,
+        req.body.email,
+        (error, isValidUser) => {
+            if (error || !isValidUser) {
+                useSendResponse(
+                    res,
+                    null,
+                    error ? errorMessage : "This user already exists."
+                );
 
-            return;
-        }
-
-        userDB.register(req.body, (response) => {
-
-            if (!response || response.error) {
-                sendError(res);
                 return;
             }
 
-            useReadEmailFile("staticFiles/accountCreated.html", (body, err) => {
-                if (!body || err) {
+            userDB.register(req.body, (response) => {
+                if (!response || response.error) {
                     sendError(res);
                     return;
                 }
 
-                const subject = 'Account Created';
+                useReadEmailFile(
+                    "staticFiles/accountCreated.html",
+                    (body, err) => {
+                        if (!body || err) {
+                            sendError(res);
+                            return;
+                        }
 
-                useSendEmail(req.body.email, subject, body, null, userDB.savelog);
+                        const subject = "Account Created";
+
+                        useSendEmail(
+                            req.body.email,
+                            subject,
+                            body,
+                            null,
+                            userDB.savelog
+                        );
+                    }
+                );
+
+                useSendResponse(
+                    res,
+                    response && response.error == null
+                        ? success + response.results.insertId
+                        : errorMessage,
+                    response.error
+                );
             });
-
-            useSendResponse(
-                res,
-                response && response.error == null ? success + response.results.insertId : errorMessage,
-                response.error
-            );
-        });
-    });
+        }
+    );
 }
 
 function login(req, res, next) {
-    // console.log("login");
+    console.log("login");
     next();
- }
+}
 
 function validateUser(req, res) {
     const token = useGetBearerToken(req);
@@ -90,12 +107,12 @@ function validateUser(req, res) {
             sendError(res);
             return;
         }
-        
+
         userDB.validateUser(userId, (response) => {
             useSendResponse(
                 res,
                 response,
-                response == null ? errorMessage : null,
+                response == null ? errorMessage : null
             );
         });
     });
@@ -110,20 +127,12 @@ function getUserId(req, res) {
     }
 
     tokenDB.getUserIDFromBearerToken(useGetBearerToken(req), (userId) => {
-        useSendResponse(
-            res,
-            userId,
-            userId == null ? errorMessage : null,
-        );
+        useSendResponse(res, userId, userId == null ? errorMessage : null);
     });
 }
 
 function sendError(res) {
-    useSendResponse(
-        res,
-        "",
-        errorMessage
-    );
+    useSendResponse(res, "", errorMessage);
 }
 
 function PasswordComplexity() {
@@ -137,11 +146,7 @@ function PasswordComplexity() {
 }
 
 function getPasswordComplexity(req, res) {
-        useSendResponse(
-        res,
-        PasswordComplexity(),
-        errorMessage
-    );
+    useSendResponse(res, PasswordComplexity(), errorMessage);
 }
 
 function CheckPasswords(password) {
@@ -175,5 +180,27 @@ function checkWhitelist(req, res) {
     var url_parts = new URL(remoteServer);
     console.log(url_parts);
     */
+}
 
+function checkUsernameEmail(req, res) {
+    if (!req.body.email && !req.body.username) {
+        sendError(res);
+        return;
+    }
+
+    userDB.isValidUser(
+        req.body.username,
+        req.body.email,
+        (error, isValidUser) => {
+            useSendResponse(
+                res,
+                !isValidUser,
+                isValidUser
+                    ? error
+                        ? errorMessage
+                        : "This information already exists."
+                    : ""
+            );
+        }
+    );
 }
