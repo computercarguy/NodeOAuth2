@@ -1,6 +1,7 @@
 {
     "scripts": {
         "start": "node index.js",
+        "build": "BUILD_PATH='nodeBuild/build/' react-scripts build",
         "dev": "nodemon index.js"
     },
     "name": "oauth2-example",
