@@ -1,18 +1,18 @@
 // Reference: https://www.npmjs.com/package/mysql
 
-const dbPool = require('mysql');
-const useAwsSecrets = require('../hooks/useAwsSecrets');
+const dbPool = require("mysql");
+const useSecrets = require("../hooks/useSecrets");
 let pool;
 
-useAwsSecrets(savelog, setPool);
+useSecrets(savelog, setPool);
 
 module.exports = {
     query,
     healthCheck,
-    savelog,
+    savelog
 };
 
-function setPool(secrets){
+function setPool(secrets) {
     if (secrets) {
         pool = dbPool.createPool({
             user: secrets.user,
@@ -26,9 +26,9 @@ function setPool(secrets){
 
 async function query(queryString, queryValues, cbFunc) {
     let parameterizedQuery = queryFormat(queryString, queryValues);
-    
+
     if (!pool) {
-        await useAwsSecrets(savelog, setPool);
+        await useSecrets(savelog, setPool);
     }
 
     pool.query(parameterizedQuery, (error, results) => {
@@ -45,16 +45,18 @@ queryFormat = function (query, values) {
 
     return query.replace(/\:(\w+)/g, function (txt, key) {
         if (values.hasOwnProperty(key)) {
-            return encodeURI(values[key]).replaceAll("%20",  " ").replaceAll("%3A", ":");
+            return encodeURI(values[key])
+                .replaceAll("%20", " ")
+                .replaceAll("%3A", ":");
         }
-        
+
         return txt;
     });
-}
+};
 
 async function healthCheck(cbFunc) {
     if (!pool) {
-        await useAwsSecrets(savelog, setPool);
+        await useSecrets(savelog, setPool);
     }
 
     query("SELECT 'healthCheckPassed'", null, cbFunc);
@@ -63,13 +65,15 @@ async function healthCheck(cbFunc) {
 function setResponse(error, results) {
     return {
         error: error,
-        results: results ? results : null,
+        results: results ? results : null
     };
 }
 
 async function savelog(filename, methodname, stage, userid, message) {
     const insertLog = `INSERT INTO eventlog (message) VALUES (':message');`;
-    let values = {message: `${filename}: ${methodname}: ${stage}: ${userid}: ${message}`};
-  
+    let values = {
+        message: `${filename}: ${methodname}: ${stage}: ${userid}: ${message}`
+    };
+
     dbPool.query(insertLog, values);
 }
