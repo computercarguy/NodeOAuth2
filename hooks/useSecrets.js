@@ -2,6 +2,10 @@ const secretName = process.env.secretName;
 const hosttype = process.env.hostType;
 
 module.exports = async (savelog, cbfunc) => {
+    if (!secretName) {
+        return;
+    }
+
     let secret;
 
     switch (hosttype.toLocaleLowerCase()) {
