@@ -46,6 +46,7 @@ queryFormat = function (query, values) {
     return query.replace(/\:(\w+)/g, function (txt, key) {
         if (values.hasOwnProperty(key)) {
             return encodeURI(values[key])
+                .replaceAll("'", "%27")
                 .replaceAll("%20", " ")
                 .replaceAll("%3A", ":");
         }

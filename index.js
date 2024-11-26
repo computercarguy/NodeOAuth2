@@ -31,7 +31,12 @@ const testAPIRoutes = require("./test/testAPIRoutes.js")(
 
 // Auth and routes
 const authenticator = require("./auth/authenticator")(userDB, tokenDB);
-const users = require("./users/users.js")(userDB, tokenDB, passwordResetDB);
+const users = require("./users/users.js")(
+    userDB,
+    tokenDB,
+    passwordResetDB,
+    authenticator
+);
 const authRoutes = require("./auth/authRoutes")(
     express.Router(),
     app,

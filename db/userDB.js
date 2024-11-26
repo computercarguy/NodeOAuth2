@@ -9,8 +9,9 @@ module.exports = (injectedPgPool) => {
         getUserById,
         isValidUser,
         updatePassword,
+        resetPassword,
         update,
-        disable,
+        disableUser,
         validateUser,
         getUserForPasswordReset,
         savelog
@@ -69,13 +70,37 @@ function updatePassword(currentPassword, password, userId, cbFunc) {
     };
 
     dbPool.query(query, values, (results) => {
-        if (response.error) {
+        if (results.error) {
             dbPool.savelog(
                 "userDB.js",
                 "updatePassword",
                 "query",
                 null,
-                response.error
+                results.error
+            );
+        }
+
+        cbFunc(results);
+    });
+}
+
+function resetPassword(password, userId, cbFunc) {
+    // use this only for a validated password reset.
+    var shaPass = crypto.createHash("sha256").update(password).digest("hex");
+    const query = `UPDATE users SET UserPassword = ':shaPass' WHERE Id = ':userId' AND Active = 1;`;
+    const values = {
+        shaPass: shaPass?.trim(),
+        userId: userId
+    };
+
+    dbPool.query(query, values, (results) => {
+        if (results.error) {
+            dbPool.savelog(
+                "userDB.js",
+                "resetPassword",
+                "query",
+                null,
+                results.error
             );
         }
 
@@ -103,32 +128,26 @@ function update(body, userId, cbFunc) {
     values.userId = userId;
 
     dbPool.query(query, values, (results) => {
-        if (response.error) {
-            dbPool.savelog(
-                "userDB.js",
-                "update",
-                "query",
-                null,
-                response.error
-            );
+        if (results.error) {
+            dbPool.savelog("userDB.js", "update", "query", null, results.error);
         }
 
         cbFunc(results);
     });
 }
 
-function disable(userId, cbFunc) {
+function disableUser(userId, cbFunc) {
     const query = `UPDATE users SET Active = 0 WHERE Id = ':userId';`;
     const values = { userId: userId };
 
     dbPool.query(query, values, (results) => {
-        if (response.error) {
+        if (results.error) {
             dbPool.savelog(
                 "userDB.js",
-                "disable",
+                "disableUser",
                 "query",
                 null,
-                response.error
+                results.error
             );
         }
 

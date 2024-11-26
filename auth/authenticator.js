@@ -90,7 +90,7 @@ function registerUser(req, res) {
 }
 
 function login(req, res, next) {
-    console.log("login");
+    //console.log("login");
     next();
 }
 
